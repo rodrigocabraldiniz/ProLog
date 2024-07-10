@@ -1,0 +1,105 @@
+%1
+analisa_lista([]):- write("Array vazio").
+analisa_lista([A|B]):- write("A cabeça é "), write(A), write(" e a calda é "), write(B).
+
+%2
+pertence(X, [X|_]).
+pertence(X, [_|B]) :- pertence(X, B).
+
+pertence2(Elemento, [Elemento|_]).
+pertence2(Elemento, [_|Resto]) :- pertence2(Elemento, Resto).
+
+remove_duplicados([],[]).
+remove_duplicados([A|B],L) :- pertence(A, B), remove_duplicados(B, L).
+remove_duplicados([A|B],[A|C]) :- remove_duplicados(B, C).
+
+%3
+troca([],,,[]).
+troca([A|B], A, X, [X|D]):- troca(B, A, X, D).
+troca([A|B], C, X, [A|D]):- troca(B, C, X, D).
+
+%4 (não está funcionando corretamente)
+potencia(Lista, Resultado) :-
+    findall(Subconj, subconjuntos(Lista, Subconj), Resultado).
+
+
+subconjuntos([], []).
+subconjuntos([X|T], [X|Subconj]) :-
+    subconjuntos(T, Subconj).
+subconjuntos([_|T], Subconj) :-
+    subconjuntos(T, Subconj).
+
+%5
+mais_longa([],_).
+mais_longa([|B],[|D]):- mais_longa(B,D).
+
+%6
+distancia(A,A,0).
+distancia((A,B),(C,D),N):- N is sqrt((C-A)^2+(D-B)^2).
+
+%7
+quadrado(N,S):-quadrado(N,S,N).
+quadrado(0,,).
+quadrado(N,S,F):-N > 0, linha(F,S), write("\n"),N1 is N - 1, quadrado(N1,S,F).
+
+linha(0,_).
+linha(N,S):-N > 0, write(S), write(" "), N1 is N - 1,linha(N1, S).
+
+%8
+elemento_n([A|_],1,A).
+elemento_n([_|B], C, X):- C1 is C - 1, elemento_n(B, C1, X).
+
+%9
+
+media([],0).
+media(X,Y):-soma(X,P),qitens(X,L),Y is P/L.
+
+soma([],0).
+soma([A|B],P):-soma(B,Z), P is Z + A.
+
+qitens([],0).
+qitens([_|B],Q):-qitens(B,Q1),Q is Q1 + 1.
+
+%10
+minimo([X],X).
+minimo([A|B],P):-minimo(B,P), A >= P.
+minimo([A|B],A):-minimo(B,S), A < S.
+
+%11
+intervalo(X,X,[X]).
+intervalo(A,B,[A|D]):-
+  B > A,
+  PROX is A + 1,
+  intervalo(PROX,B,D).
+intervalo(A,B,[]):- A > B.
+
+%12
+mdc(_,1,1).
+mdc(1,_,1).
+mdc(X,C,L):-X > C, S is X - C, S \= 0, mdc(C,S,L).
+mdc(X,C,L):-C > X, S is C - X, S \= 0, mdc(C,S,L).
+mdc(X,C,C):-S is X - C, S == 0.
+
+%13
+ocorrencias(_,[],0).
+ocorrencias(X,[A|B],Y):-  X == A, ocorrencias(X,B,S), Y is S + 1.
+ocorrencias(X,[_|B],Y):-ocorrencias(X,B,Y).
+
+%14
+/**
+*os dois funcionam, porem um resulta em uma lista *crescente e o outro decrescente.
+*/
+
+divisores(X,Y):-divisores(X,Y,X).
+divisores(_,[1],1).
+divisores(X,[Z|B],Z):- X > 0,R is X mod Z, R == 0, Z1 is Z - 1, divisores(X,B,Z1).
+divisores(X,Y,Z):- X > 0, Z1 is Z - 1, divisores(X,Y,Z1).
+divisores(X,[],_):- (X =< 0).
+
+
+
+divisores2(X,Y):-divisores2(X,Y,1).
+divisores2(X,[X],X).
+divisores2(X,[Z|B],Z):- X > 0,R is X mod Z, R == 0, Z1 is Z + 1, divisores2(X,B,Z1).
+divisores2(X,Y,Z):- X > 0, Z1 is Z + 1, divisores2(X,Y,Z1).
+divisores2(X,[],_):- (X =< 0).
