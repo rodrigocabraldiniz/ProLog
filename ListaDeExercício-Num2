@@ -1,0 +1,154 @@
+%---------------------[EXERCICIO 1]----------------------
+
+% ?- forall(member(X,[1,2,3]),write(X)).
+    % o resultado será "123", pois para cada elemento de uma lista,
+    % feito através da função 'member', e aplica a função do segundo 
+    % parâmetro em cada um desses elemntos. 
+% ?- forall(between(1,5,I),(write(I*I),write(" "))).
+    % mostrará "1 4 9 16 25", pois para cada elemento da lista, fará
+    % o quadrado desse número.
+% ?- forall(between(10,20,I),write(I:" ")).
+    % o resultado será "10: 11: 12: 13: 14: 15: 16: 17: 18: 19: 20: ",
+    % porque para os números de 10 até 20 ele o escreverá e depois ": ".
+
+%---------------------[EXERCICIO 2]----------------------
+
+a:-a(0).
+a(X):- X>10,!.
+a(X):- write(X),write(" "), X1 is X+1,a(X1).
+
+    % a consulta para "?- a" será "0 1 2 3 5 6 7 8 9". Ao fazer a 
+    % chamada 'a', o predicado sem parâmetros será chamdo e ele
+    % mesmo chamara a função 'a' com parâmetros, passando o valor
+    % '0'. Após essa chamada a função imprimirá o valor do parâmetro
+    % e passará para outra chamada da função o valor do parâmetro + 1
+    %. Isso se repetirá até que o valor seja maior que 10.
+
+%---------------------[EXERCICIO 3]----------------------
+
+wN(0):-write(0),!.
+wN(N):-write(N),N1 is N-1, wN(N1),write(N).
+
+%função principal
+piramide(X):-piramide1(X,0),!.
+
+%função que escreve os espaços
+espacos(0):-!.
+espacos(X):-
+    X > 0, 
+    write(" "), 
+    X1 is X - 1, 
+    espacos(X1).
+
+%função que escreve a pirâmide
+piramide1(X, X):-
+    wN(X),!.
+piramide1(X,Y):-
+    Z is X - Y,
+    espacos(Z),
+    wN(Y), 
+    nl, 
+    Y1 is Y + 1, 
+    piramide1(X, Y1).
+
+%---------------------[EXERCICIO 4]----------------------
+
+expoente(_,0,1):-!.
+expoente(X,Y,L):-
+    Y > 0,
+    Y1 is Y - 1,
+    expoente(X, Y1, L1),
+    L is X*L1.
+
+%---------------------[EXERCICIO 5]----------------------
+
+d(0).
+d(1).
+    % O resultado é "L = [[0, 0], [0, 1], [1, 0], [1, 1]].".
+    % A função findall irá fazer um operação similar ao produto
+    % cartesiano com ele mesmo (AxA).
+
+%---------------------[EXERCICIO 6]----------------------
+
+palindromo(X):- reverse(X, L), palindromo1(X, L).
+
+palindromo1([A|[]],[A|[]]):-!.
+palindromo1([A|B],[A|C]):-palindromo1(B,C).
+
+
+%---------------------[EXERCICIO 7]----------------------
+
+% função que acha as duas lista de mesmo tamanho que concatenadas
+% resultem na lista desejada.
+
+separar(Lista, Metade1, Metade2):-
+    append(Metade1, Metade2, Lista),
+    length(Metade1, N),
+    length(Metade2, N).
+
+metIguais(X):-
+    separar(X,A,B),
+    metIguais1(A,B),!.
+
+metIguais1([A|[]],[A|[]]).
+metIguais1([A|B],[A|C]):-metIguais1(B,C).
+
+%---------------------[EXERCICIO 8]----------------------
+
+insOrd([A|B],X,[A|L]):- X > A,insOrd(B,X,L),!.
+insOrd(Z,X,[X|Z]).
+
+%---------------------[EXERCICIO 9]----------------------
+
+particiona([],[],[]).
+particiona([A,B|C],[A|D],[B|E]):-particiona(C,D,E),!.
+particiona([A|_],[A],[]).
+
+%---------------------[EXERCICIO 10]----------------------
+
+merge([],A,A).
+merge([A|B],C,[A|D]):-merge(B,C,D).
+
+%---------------------[EXERCICIO 11]----------------------
+
+% O erro está no 'corte' (!), que deve ser movido para o final 
+% da condição, para que caso dê falso em alguma condição
+% ele possa tentar outra regra.
+
+% ERRADO
+%max(X,Y,M):- !,X>Y, M=X.
+%max(X,Y,M):- !,X<=Y, M=Y.
+
+
+% CORRIGIDO
+max(X,Y,M):- X>Y, M=X, !.
+max(X,Y,M):- X=<Y, M=Y, !.
+
+%---------------------[EXERCICIO 12]----------------------
+
+% Não entendi, refazer mais tarde
+
+a.
+b.
+p:-!,a.
+p:-b.
+
+%---------------------[EXERCICIO 13]----------------------
+
+pred1(A,L):-findall([X],member(X,A),L).
+
+pred2(A,L):-findall(pred(X,X),member(X,A),L).
+
+pred3(A,L):-findall([element,X],member(X,A),L).
+
+%---------------------[EXERCICIO 14]----------------------
+
+transforma('encher o jarro 1', [X,Y], [3,Y]) :- X < 3.
+transforma('enchar o jarro 2', [X,Y], [X,4]) :- Y < 4.
+transforma('esvaziar o jarro 1', [X,Y], [0,Y]) :- X > 0.
+transforma('esvaziar o jarro 2', [X,Y], [X,0]) :- Y > 0.
+transforma('transferir do jarro 1 para o 2', [X,Y], [0,Y1]) :- Y < 4, Y1 is X + Y, Y1 =< 4.
+transforma('transferir do jarro 2 para o 1', [X,Y], [X1,0]) :- X < 3, X1 is X + Y, X1 =< 3.
+%--- considerando que ainda restara agua no jarro de origem
+transforma('transferir do jarro 1 para o 2', [X,Y], [X1,4]) :- Y1 is 4 - Y, X1 is X - Y1.
+transforma('transferir do jarro 2 para o 1', [X,Y], [3,Y1]) :- X1 is 3 - X, Y1 is Y - X1.
